@@ -1,10 +1,13 @@
+#!/bin/python2
+
 from database import DataOperations
 from database import APICalls
 
 import sys
 
-def print_table(cursor):
-    rows = cursor.execute("SELECT * FROM tvshows")
+def print_table(rows):
+    if rows == None:
+        return
     
     print "\n| %3s | %28s | %8s | %23s | %13s | %13s | %13s |" % ('id', 'name',
                                                   'show_id', 'network',
@@ -69,7 +72,7 @@ def flags(flag, database):
     elif flag == '-ri':
         remove_entry(database, "", sys.argv[2])
     elif flag == '-l':
-        print_table(database.cursor)
+        print_table(database.all_rows())
     elif flag == '-s':
         search(sys.argv[2:])
     elif flag == '-c':
@@ -77,14 +80,15 @@ def flags(flag, database):
     else:
         get_help()
 
+# TODO: fix help
 def main():
     database = DataOperations()
     database.create_db()
     
     if len(sys.argv) > 1:
         flags(sys.argv[1], database)
-    else:
-        flags("", None)
+#    else:
+#        flags("", None)
     
     database.close_db()
 

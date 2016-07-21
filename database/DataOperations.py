@@ -47,7 +47,7 @@ class DataOperations(object):
         return False
 
     def search_today(self, day):
-        rows = self.cursor.execute("SELECT * FROM tvshows WHERE days=(?) OR identification=(?)", (day, 3))
-        
-        for row in rows:
-            print rows[2]
+        return self.cursor.execute("SELECT * FROM tvshows WHERE days=(?) OR identification=(?)", (day, 3))
+
+    def all_rows(self):
+        return self.cursor.execute("SELECT * FROM tvshows")
