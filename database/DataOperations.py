@@ -9,7 +9,7 @@ class DataOperations(object):
         self.cursor = None
     
     def create_db(self):
-        conn = sqlite3.connect('datatv.db')
+        conn = sqlite3.connect('/home/aasoliz/datatv.db')
         
         c = conn.cursor()
         check = c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='tvshows'")

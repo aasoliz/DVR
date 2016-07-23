@@ -15,7 +15,11 @@ class APICalls(object):
                 "X-Mashape-Key": self.API_KEY
             }
         )
-    
+        
+        if len(responses.body) < 1:
+            print "\nThere seems there are no shows matching that description. So either it's very obscure or you are looking for a show that is from another universe."
+            search = False
+        
         i = 1
         for response in responses.body:
             print '\t[%d] %s (status: %s)\n\t\t%s\n' % (i, response['show']['name'],
@@ -42,12 +46,27 @@ class APICalls(object):
                     print "\nLooks like you're favorite show might not make it. I'm so sorry, just know that I know how you feel."
                 else:
                     # (name, identification, network, day)
-                    return (e['show']['name'], e['show']['id'],
+                    try:
+                        return (e['show']['name'], e['show']['id'],
                             e['show']['network']['name'],
                             e['show']['schedule']['days'][0])
-                
+                    except TypeError:
+                        return (e['show']['name'], e['show']['id'],
+                            "", e['show']['schedule']['days'][0])
+                    
         return None
-
+    
+    def episode_list(self, identification, date):
+        responses = unirest.get("https://tvjan-tvmaze-v1.p.mashape.com/shows/" + str(identification) + "/episodesbydate?date=" + date,
+            headers={
+                "X-Mashape-Key": self.API_KEY
+            }
+        )
+        
+        if responses['name'] == 'Not Found':
+            return False
+        return True
+    
     def season_premiere(self, identification):
         responses = unirest.get("https://tvjan-tvmaze-v1.p.mashape.com/shows/" + str(identification) + "/seasons",
             headers={
@@ -70,12 +89,14 @@ class APICalls(object):
             premiere_date = datetime.strptime(premiere, '%Y-%m-%d')
             today = date.today()
             
-            if premiere_date.year == today.year:
+            if premiere_date.year < today.year:
+                return (premiere, ending)
+            elif premiere_date.year == today.year:
                 if premiere_date.month < today.month:
                     return (premiere, ending)
                 elif premiere_date.month == today.month:
                     if premiere_date.day <= today.day:
-                        return (premiere, ending)
+                        return (premiere,ending)
                     
             print "\nSeason hasn't started yet. Get back to me later."
             return None
@@ -94,8 +115,10 @@ class APICalls(object):
                 elif end_date.month == today.month:
                     if end_date.day >= today.day:
                         return (premiere, ending)
+            elif end_date.year > today.year:
+                return (premiere, ending)
                     
-        print "\n The season hasn't started yet was not renewed. More likely not renewed. So sad for you!"
+        print "\n The season hasn't been renewed yet. More likely not renewed. So sad for you!"
         return None
 
     def remove_tags(self, string):
@@ -107,7 +130,25 @@ class APICalls(object):
         if len(descript) < 1:
             return "No summary, so take a chance if you want"
         
-        return descript[0:80] + "\n\t\t" + descript[80:160] + "\n\t\t" + descript[160:240] + "..."
+        shorten = ""
+        
+        length = len(descript)
+        
+        i = 0
+        j = 80
+        while j < 241:
+            if j == 240:
+                shorten += descript[i:j]
+            else:
+                shorten += descript[i:j] + "\n\t\t"
+                
+            i += 80
+            j += 80
+        
+        if j - 80 < length:
+            shorten += "..."
+        
+        return shorten
     
     def query_tostring(self, query):
         nw = ""

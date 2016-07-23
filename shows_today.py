@@ -29,6 +29,13 @@ def check_finale(date):
                 return True
     return False
 
+def episode_aired(database, identification):
+    aired = database.episode_list(identification, date)
+    
+    if aired:
+        return True
+    return False
+
 def main():
     database = DataOperations()
     database.create_db()
@@ -40,7 +47,10 @@ def main():
         running = check_finale(row[6])
         
         if running:
-            notify("\t" + row[1])
+            if episode_aired(database, row[2]):
+                notify("\t" + row[1])
+            else:
+                print "\nThe show %s didn't air an episode today. I know how rude!"
         else:
             database.remove_entry("", row[2])
             print "\nThe show's %s season ended. So I did you a favor and removed it for you."

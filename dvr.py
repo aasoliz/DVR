@@ -42,12 +42,12 @@ def add_entry(query, database):
             else:
                 print "\nYou must have short term memory because you've already added that show. OOPS!\nThis was totally your fault by the way."
     
-    print_table(database.cursor)
+    print_table(database.all_rows())
 
 # TODO: handle search queries of names
 def remove_entry(database, query="", identification=0):
     database.remove_entry(query, identification)
-    print_table(database.cursor)
+    print_table(database.all_rows())
 
 def search(query):
     api = APICalls()
