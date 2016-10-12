@@ -10,8 +10,9 @@ def print_table(rows):
         return
     
     print "\n| %3s | %28s | %8s | %23s | %13s | %13s | %13s |" % ('id', 'name',
-                                                  'show_id', 'network',
-                                                                  'day', 'season_premiere', 'season_finale')
+                                                                  'show_id', 'network',
+                                                                  'day', 'season_premiere',
+                                                                  'season_finale')
     print "|-----+------------------------------+----------+-------------------------+---------------+-----------------+---------------|"
     for row in rows:
         print "|%4d | %28s | %8d | %23s | %13s | %15s | %13s |" % (row[0], row[1], row[2], row[3], row[4], row[5], row[6])
@@ -56,6 +57,9 @@ def search(query):
 def clear_table(database):
     database.remove_db()
 
+#def update(database:
+    
+
 def get_help():
     print "\t\t\tOptions"
     print "-i <search term>\t\t\tAdd a show to your list"
@@ -77,6 +81,8 @@ def flags(flag, database):
         search(sys.argv[2:])
     elif flag == '-c':
         clear_table(database)
+    elif flag == '-u':
+        update(database)
     else:
         get_help()
 

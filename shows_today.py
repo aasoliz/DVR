@@ -8,6 +8,7 @@ gi.require_version('Notify', '0.7')
 from gi.repository import Notify
 
 from database import DataOperations
+from database import APICalls
 from dvr import print_table
 
 today = date.today()
@@ -29,8 +30,9 @@ def check_finale(date):
                 return True
     return False
 
-def episode_aired(database, identification):
-    aired = database.episode_list(identification, date)
+def episode_aired(identification, date):
+    api = APICalls()
+    aired = api.episode_list(identification, str(date))
     
     if aired:
         return True
@@ -47,13 +49,13 @@ def main():
         running = check_finale(row[6])
         
         if running:
-            if episode_aired(database, row[2]):
+            if episode_aired(row[2], str(today)):
                 notify("\t" + row[1])
             else:
                 print "\nThe show %s didn't air an episode today. I know how rude!"
         else:
             database.remove_entry("", row[2])
-            print "\nThe show's %s season ended. So I did you a favor and removed it for you."
+            print "\nThe show's %s season ended. So I did you a favor and removed it for you." % row[2]
         
     print_table(database.search_today(day_week))
     notify('I have graciously put all the information into a file. So You\'re Welcome!')

@@ -8,7 +8,6 @@ class APICalls(object):
     def __init__(self):
         self.API_KEY = '8mzBiWrKeqmshseRxCczOZoVPHM3p1Gs7bcjsnFezHLyxB2y8e'
 
-    # TODO: Check if there was a response with shows or empty
     def search_show(self, query, search):
         responses = unirest.get("https://tvjan-tvmaze-v1.p.mashape.com/search/shows?q=" + self.query_tostring(query),
             headers={
@@ -63,7 +62,7 @@ class APICalls(object):
             }
         )
         
-        if responses['name'] == 'Not Found':
+        if responses.body[0]['name'] == 'Not Found':
             return False
         return True
     
